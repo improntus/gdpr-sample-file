@@ -1,0 +1,38 @@
+---
+extends: 'magento2'
+version: '2.4.5'
+
+database:
+    host: 'localhost'
+    user: 'root'
+    password: '123456'
+    name: 'skc'
+
+dump:
+    output: 'skc-{Y-m-d}.sql.bz2'
+    compress: 'bzip2'
+
+# Blacklist de tablas innecesarias (no se dumpean)
+
+tables_blacklist:
+    - 'webapi_logs'
+    - 'catalog_data_exporter_products'
+    - 'catalog_product_index_price_replica'
+    - 'catalog_product_index_eav_replica'
+    - 'search_query'
+    - 'cataloginventory_stock_status_replica'
+
+tables:
+    # No cambiar mails de improntus
+    admin_user:
+        skip_conversion_if: 'strpos({{email}}, "@improntus") !== false'
+
+    # Dump only recent quotes (por default le dejamos 3 meses)
+    quote:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
+
+    # Dump only recent orders (por default le dejamos 3 meses)
+    sales_order:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
