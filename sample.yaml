@@ -19,7 +19,6 @@ tables_blacklist:
     - 'catalog_data_exporter_products'
     - 'catalog_product_index_price_replica'
     - 'catalog_product_index_eav_replica'
-    - 'search_query'
     - 'cataloginventory_stock_status_replica'
     - 'catalogrule_product__*'
     - 'catalogrule_product_price__*'
