@@ -1,0 +1,15 @@
+# ===================== #
+#  Extend Clean Orders  #
+# ===================== #
+---
+tables:
+  'quote*':
+    truncate: true
+  'sales_*':
+    truncate: true
+  reporting_orders:
+    truncate: true
+  tax_order_aggregated_created:
+    truncate: true
+  tax_order_aggregated_updated:
+    truncate: true

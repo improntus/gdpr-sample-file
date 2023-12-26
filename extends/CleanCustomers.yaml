@@ -1,0 +1,21 @@
+# ======================== #
+#  Extend Clean Customers  #
+# ======================== #
+---
+tables:
+  'login_*':
+    truncate: true
+  magento_login_as_customer_log:
+    truncate: true
+  'customer_address_*':
+    truncate: true
+  'customer_entity*':
+    truncate: true
+  customer_grid_flat:
+    truncate: true
+  customer_log:
+    truncate: true
+  wishlist:
+    truncate: true
+  'wishlist_*':
+    truncate: true

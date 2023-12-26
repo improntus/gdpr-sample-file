@@ -27,7 +27,21 @@ tables_blacklist:
 tables:
     # No cambiar mails de improntus
     admin_user:
+        # Filter improntus Users
+        filters:
+            - [ 'email', 'like', '%@improntus.com' ]
+        # Active Users
+        converters:
+            is_active:
+                converter: 'setValue'
+                parameters:
+                    value: 1
+        # Skip conversion
         skip_conversion_if: 'strpos({{email}}, "@improntus") !== false'
+
+    # Truncate Search Query (I do it this way because it does not regenerate when running SE:UP)
+    search_query:
+        truncate: true
 
     # Dump only recent quotes (por default le dejamos 3 meses)
     quote:
