@@ -5,11 +5,55 @@
 tables:
   'quote*':
     truncate: true
-  'sales_*':
-    truncate: true
   reporting_orders:
     truncate: true
   tax_order_aggregated_created:
     truncate: true
   tax_order_aggregated_updated:
+    truncate: true
+  sales_order:
+    truncate: true
+  sales_order_address:
+    truncate: true
+  sales_order_grid:
+    truncate: true
+  sales_order_item:
+    truncate: true
+  sales_order_payment:
+    truncate: true
+  sales_order_status_history:
+    truncate: true
+  sales_payment_transaction:
+    truncate: true
+  sales_refunded_aggregated_order:
+    truncate: true
+  sales_sequence_profile:
+    truncate: true
+  'sales_order_tax*':
+    truncate: true
+  'sales_refunded*':
+    truncate: true
+  'sales_sequence*':
+    truncate: true
+  'sales_shipment*':
+    truncate: true
+  'sales_bestsellers*':
+    truncate: true
+  'sales_creditmemo*':
+    truncate: true
+  'sales_invoice*':
+    truncate: true
+  'sales_invoiced*':
+    truncate: true
+  'sequence_creditmemo*':
+    truncate: true
+  'sequence_invoice*':
+    truncate: true
+  'sequence_order*':
+    truncate: true
+  'sequence_rma*':
+    truncate: true
+  'sequence_shipment*':
+    truncate: true
+  'sales_order_aggregated*':
     truncate: true
