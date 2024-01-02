@@ -1,0 +1,9 @@
+# ========================================= #
+#  Tablas de log y reportes pesados         #
+# ========================================= #
+---
+tables:
+  mobbex_log:
+    truncate: true
+  'mageplaza_reports_sales_by_*':
+    truncate: true

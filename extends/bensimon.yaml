@@ -1,0 +1,7 @@
+# ========================================= #
+#  Tablas de log y reportes pesados         #
+# ========================================= #
+---
+tables:
+  amasty_amrules_purchase_history_index:
+    truncate: true
