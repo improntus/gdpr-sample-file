@@ -1,0 +1,54 @@
+---
+extends:
+- 'magento2'
+- 'extends/morph.yaml'
+
+version: '2.3.2'
+
+database:
+    host: 'localhost'
+    user: 'erika'
+    password: '12345678'
+    name: 'morph_prod'
+
+dump:
+    output: 'morph_pro-{Y-m-d}.sql.bz2'
+    compress: 'bzip2'
+
+# Blacklist de tablas innecesarias (no se dumpean)
+
+tables_blacklist:
+    - 'webapi_logs'
+    - 'catalog_data_exporter_products'
+    - 'catalog_product_index_price_replica'
+    - 'catalog_product_index_eav_replica'
+    - 'cataloginventory_stock_status_replica'
+    - 'catalogrule_product__*'
+    - 'catalogrule_product_price__*'
+    - 'amasty_label_index__*'
+
+tables:
+    # No cambiar mails de improntus
+    admin_user:
+        # Filter improntus Users
+        filters:
+            - [ 'email', 'like', '%@improntus.com' ]
+        # Active Users
+        converters:
+            is_active:
+                converter: 'setValue'
+                parameters:
+                    value: 1
+        # Skip conversion
+        skip_conversion_if: 'strpos({{email}}, "@improntus") !== false'
+
+    # Truncate Search Query (I do it this way because it does not regenerate when running SE:UP)
+    search_query:
+        truncate: true
+
+    # Dump only recent quotes (por default le dejamos 3 meses)
+    quote:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
+
+

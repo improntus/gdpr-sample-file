@@ -1,0 +1,8 @@
+# ========================================= #
+#  Tablas de log y reportes pesados         #
+# ========================================= #
+---
+tables:
+  mailchimp_errors:
+    truncate: true
+
