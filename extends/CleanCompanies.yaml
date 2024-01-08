@@ -1,0 +1,33 @@
+# ======================== #
+#  Extend Clean Companies  #
+# ======================== #
+---
+tables:
+  company:
+    truncate: true
+  company_advanced_customer_entity:
+    truncate: true
+  company_credit:
+    truncate: true
+  company_credit_history:
+    truncate: true
+  company_order_entity:
+    truncate: true
+  company_payment:
+    truncate: true
+  company_permissions:
+    truncate: true
+  company_roles:
+    truncate: true
+  company_shipping:
+    truncate: true
+  company_structure:
+    truncate: true
+  company_team:
+    truncate: true
+  company_user_roles:
+    truncate: true
+  negotiable_quote_company_config:
+    truncate: true
+  purchase_order_company_config:
+    truncate: true

@@ -1,0 +1,125 @@
+# ===================================== #
+#              VIU DUMPER               #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+  - 'extends/CleanCustomers.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  output: 'viu_db_prod_{Ymd}.sql.gz'
+
+# Set Database Name
+database:
+  name: 'viu'
+
+# Truncate custom tables
+tables:
+  improntus_saires_apikey:
+    truncate: true
+  improntus_whatsapp_contacts:
+    truncate: true
+  'improntus_mercadopago_*':
+    truncate: true
+  'improntus_ohgiftcard_*':
+    truncate: true
+  'amasty_audit_*':
+    truncate: true
+  'amasty_reports_*':
+    truncate: true
+  yotpo_order_status_history:
+    truncate: true
+  amasty_feed_valid_products:
+    truncate: true
+  improntus_product_swatches_index:
+    truncate: true
+  improntus_configurable_related_index:
+    truncate: true
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # Disable Weltpixel GA
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["weltpixel_ga4/general/enable","weltpixel_ga4/meta_pixel_tracking/enable"])'
+              parameters:
+                value: '0'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["google/gtag/analytics4/measurement_id","google/analytics/account","weltpixel_ga4/meta_pixel_tracking/code_snippet","weltpixel_ga4/api/measurement_id","weltpixel_ga4/api/container_id","weltpixel_ga4/api/account_id"])'
+            # GTM - GA - WoowUp - Hotjar
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["design/footer/absolute_footer","design/head/includes"])'
+            # Disabled Andreani / Saires
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["carriers/andreaniestandar/active","carriers/andreanisucursal/active","carriers/andreaniurgente/active","carriers/sairessameday/active","carriers/sairesnextday/active"])'
+              parameters:
+                value: '0'
+            # Disabled Oh! GiftCard
+            - converter: 'setValue'
+              condition: '{{path}} == "ohgiftcard/general/active"'
+              parameters:
+                value: '0'
+            # WoowUp
+            - converter: 'setNull'
+              condition: '{{path}} == "improntus_woowup/config/public_key"'
+            # Mercado Pago SandBox Credentials
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/pro/active"])'
+              parameters:
+                value: '1'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/public_key"])'
+              parameters:
+                value: 'TEST-1b54a511-6fda-4ace-a846-accecb6f2c92'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/access_token"])'
+              parameters:
+                value: 'TEST-3451936289044743-072401-df1cb4483315cd32e3b7c710b0dfd4cf-271845849'
+            # Facebook Pixel APPTRIAN
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["apptrian_facebookpixel/client/base_code_enabled","apptrian_facebookpixel/client/purchase_enabled","apptrian_facebookpixel/client/search_enabled","apptrian_facebookpixel/client/viewcontent_enabled","apptrian_facebookpixel/client/base_code_enabled","apptrian_facebookpixel/client/noscript_enabled","apptrian_facebookpixel/client/addtocart_enabled","apptrian_facebookpixel/client/addtowishlist_enabled","apptrian_facebookpixel/client/completeregistration_enabled","apptrian_facebookpixel/client/initiatecheckout_enabled","apptrian_facebookpixel/client/pageview_enabled","apptrian_facebookpixel/client/enabled","apptrian_facebookpixel/server/enabled"])'
+              parameters:
+                value: '0'
+            # SMTP
+            - converter: 'setValue'
+              condition: '{{path}} == "system/gmailsmtpapp/active"'
+              parameters:
+                value: '1'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/username","system/gmailsmtpapp/password"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/ssl","system/gmailsmtpapp/auth"])'
+              parameters:
+                value: 'none'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/debug/email","system/gmailsmtpapp/debug/from_email"])'
+              parameters:
+                value: 'mailbox.passkeeper@improntus.com'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/name"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtphost"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtpport"])'
+              parameters:
+                value: '2525'
+            # Change Fastly Cache
+            - converter: 'setValue'
+              condition: '{{path}} == "system/full_page_cache/caching_application"'
+              parameters:
+                value: '1'

@@ -1,0 +1,60 @@
+# ================================ #
+#  Improntus yaml base for extend  #
+# ================================ #
+---
+extends:
+  - 'magento2'
+
+dump:
+  compress: 'bzip2'
+  skip_definer: true
+
+database:
+  host: 'localhost'
+  user: 'improntus'
+  password: '123456'
+
+# Blacklist
+tables_blacklist:
+  - 'webapi_logs'
+  - 'catalog_data_exporter_products'
+  - 'catalog_product_index_price_replica'
+  - 'catalog_product_index_eav_replica'
+  - 'cataloginventory_stock_status_replica'
+  - 'catalogrule_product__*'
+  - 'catalogrule_product_price__*'
+  - 'amasty_label_index__*'
+
+tables:
+  admin_user:
+    # Filter improntus Users
+    filters:
+      - [ 'email', 'like', '%@improntus.com' ]
+    # Active Users
+    converters:
+      is_active:
+        converter: 'setValue'
+        parameters:
+          value: 1
+    # Skip conversion
+    skip_conversion_if: 'strpos({{email}}, "@improntus") !== false'
+
+  # Truncate Search Query (I do it this way because it does not regenerate when running SE:UP)
+  search_query:
+    truncate: true
+
+  # Truncate other tables
+  cron_schedule:
+    truncate: true
+  magento_acknowledged_bulk:
+    truncate: true
+  magento_bulk:
+    truncate: true
+  newsletter_subscriber:
+    truncate: true
+  newsletter_problem:
+    truncate: true
+  magento_operation:
+    truncate: true
+  import_history:
+    truncate: true

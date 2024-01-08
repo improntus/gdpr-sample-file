@@ -1,0 +1,73 @@
+# ===================================== #
+#              SKC DUMPER               #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+  - 'extends/CleanCompanies.yaml'
+  - 'extends/CleanCustomers.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  output: 'skc_db_prod_{Ymd}.sql.gz'
+
+# Set Database Name
+database:
+  name: 'beparts'
+
+# Truncate custom tables
+tables:
+  linets_backorderprices_sappricelog:
+    truncate: true
+  sap_catalog_product_price:
+    truncate: true
+  sap_catalog_inventory_stock:
+    truncate: true
+  linets_orderattachment:
+    truncate: true
+  company_linets:
+    truncate: true
+
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # BASE URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url"])'
+              parameters:
+                value: 'https://beparts.test/'
+            # BASE MEDIA URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_media_url","web/unsecure/base_media_url"])'
+              parameters:
+                value: 'https://beparts.cl/media/'
+            # BASE LINK
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["web/unsecure/base_link_url","web/secure/base_link_url"])'
+            # Change Fastly Cache
+            - converter: 'setValue'
+              condition: '{{path}} == "system/full_page_cache/caching_application"'
+              parameters:
+                value: '1'
+            # SAP CREDENTIALS
+            - converter: 'setValue'
+              condition: '{{path}} == "sap/general/integration_url"'
+              parameters:
+                value: 'http://13.77.81.192/SKC_API_MDM_B2B/api/'
+            - converter: 'setValue'
+              condition: '{{path}} == "sap/general/integration_password"'
+              parameters:
+                value: 'A0BF81DD-2EF3-48FC-9C6B-16FDA47EAE57AA'
+            - converter: 'setValue'
+              condition: '{{path}} == "sap/general/integration_user"'
+              parameters:
+                value: 'CodigoSistema'
