@@ -27,13 +27,9 @@ tables:
     truncate: true
   sales_refunded_aggregated_order:
     truncate: true
-  sales_sequence_profile:
-    truncate: true
   'sales_order_tax*':
     truncate: true
   'sales_refunded*':
-    truncate: true
-  'sales_sequence*':
     truncate: true
   'sales_shipment*':
     truncate: true
