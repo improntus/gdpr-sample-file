@@ -1,0 +1,80 @@
+# ===================================== #
+#              RICOH DUMPER             #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  output: 'ricoh_db_prod_{Ymd}.sql.gz'
+
+# Set Database Name
+database:
+  name: 'ricoh'
+
+# Truncate custom tables
+tables:
+  'improntus_mercadopago_*':
+    truncate: true
+  'amasty_audit_*':
+    truncate: true
+  'amasty_reports_*':
+    truncate: true
+  yotpo_order_status_history:
+    truncate: true
+  amasty_feed_valid_products:
+    truncate: true
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # Disable Weltpixel GA
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["weltpixel_ga4/general/enable","weltpixel_ga4/meta_pixel_tracking/enable"])'
+              parameters:
+                value: '0'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["google/gtag/analytics4/measurement_id","google/analytics/account","weltpixel_ga4/meta_pixel_tracking/code_snippet","weltpixel_ga4/api/measurement_id","weltpixel_ga4/api/container_id","weltpixel_ga4/api/account_id"])'
+            # SMTP
+            - converter: 'setValue'
+              condition: '{{path}} == "system/gmailsmtpapp/active"'
+              parameters:
+                value: '1'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/username","system/gmailsmtpapp/password"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/ssl","system/gmailsmtpapp/auth"])'
+              parameters:
+                value: 'none'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/debug/email","system/gmailsmtpapp/debug/from_email"])'
+              parameters:
+                value: 'mailbox.passkeeper@improntus.com'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/name"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtphost"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtpport"])'
+              parameters:
+                value: '2525'
+            # Change Fastly Cache
+            - converter: 'setValue'
+              condition: '{{path}} == "system/full_page_cache/caching_application"'
+              parameters:
+                value: '1'

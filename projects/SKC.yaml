@@ -71,3 +71,6 @@ tables:
               condition: '{{path}} == "sap/general/integration_user"'
               parameters:
                 value: 'CodigoSistema'
+            # RECAPTCHA (NATIVO)
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["recaptcha_frontend/type_for/customer_login","recaptcha_frontend/type_for/customer_forgot_password","recaptcha_frontend/type_for/customer_create"])'
