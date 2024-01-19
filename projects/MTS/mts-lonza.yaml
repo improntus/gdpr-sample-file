@@ -1,0 +1,143 @@
+---
+extends: 'magento2'
+version: '2.3.3'
+
+database:
+    host: 'localhost'
+    user: 'zeta'
+    password: '123456'
+    name: 'mts.lonza'
+
+dump:
+    output: 'clean_dump-mts.lonza-{Ym}.sql.gz'
+    compress: 'gzip'
+
+tables:
+    # Truncate useless tables
+    advancedinventory_log:
+        truncate: true
+    customer_log:
+        truncate: true
+    mageplaza_smtp_log:
+        truncate: true
+    magetop_smtp_log:
+        truncate: true
+    search_query:
+        truncate: true
+    webapi_logs:
+        truncate: true
+
+    # No cambiar mails de improntus
+    admin_user:
+        # Filter improntus Users
+        #filters:
+        #    - [ 'email', 'like', '%@improntus.com' ]
+        # Active Users
+        converters:
+            is_active:
+                converter: 'setValue'
+                parameters:
+                    value: 1
+        # Skip conversion
+        skip_conversion_if: 'strpos({{email}}, "@improntus") !== false'
+
+    # Dump only recent quotes (por default le dejamos 3 meses)
+    quote:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
+
+    # Dump only recent orders (por default le dejamos 3 meses)
+    sales_order:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
+
+    core_config_data:
+        converters:
+            value:
+                converter: 'chain'
+                parameters:
+                    converters:
+                        # Modifico las URL's del proyecto por las definidas en el vhost local.
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url","web/secure/base_link_url","web/unsecure/base_link_url"])'
+                          parameters:
+                            value: 'http://lonza-dev.com/'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["web/unsecure/base_static_url","web/secure/base_static_url","web/unsecure/base_media_url","web/secure/base_media_url"])'
+                          parameters:
+                            value: NULL
+                        # ---------------------------------------------- 
+                            
+                        # Desactivo Google Analytics & Google Tag Manager.
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["analytics/subscription/enabled","google/analytics/active","weltpixel_googletagmanager/general/enable","weltpixel_googletagmanager/general/enable_brand"])'
+                          parameters:
+                            value: '0'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["google/analytics/account","weltpixel_googletagmanager/api/ua_tracking_id","tatvic_ee/general/ua_id"])'
+                          parameters:
+                            value: NULL
+                        # Necesito poder reemplazar los strings por uno solo con saltos de línea, o bien utilizar solo el primero
+                        - converter: 'replace'
+                          condition: 'in_array({{path}},["design/footer/absolute_footer","design/head/includes"])'
+                          parameters:
+                            search: 'GTM-W7WT4C3'
+                            replacement: 'GTM-1111111'
+                        # ---------------------------------------------- 
+
+                        # Configuro las credenciales de testing de Mercado Pago
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["payment/mercadopago_basic/active"])'
+                          parameters:
+                            value: '1'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["payment/mercadopago/public_key"])'
+                          parameters:
+                            value: 'TEST-1b54a511-6fda-4ace-a846-accecb6f2c92'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["payment/mercadopago/access_token"])'
+                          parameters:
+                            value: 'TEST-3451936289044743-072401-df1cb4483315cd32e3b7c710b0dfd4cf-271845849'
+                        # ---------------------------------------------- 
+
+                        # Configuro a Transbak Webpay en modo testing 
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["payment/transbank_webpay/security/environment","payment/transbank_webpay/security_parameters/environment"])'
+                          parameters:
+                            value: 'TEST'
+                        # ---------------------------------------------- 
+
+                        # Configuración de SMTP
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/module/product_key","smtp/configuration_option/username","smtp/configuration_option/password","smtp/configuration_option/return_path_email"])'
+                          parameters:
+                            value: NULL
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/configuration_option/protocol","smtp/configuration_option/authentication"])'
+                          parameters:
+                            value: 'none'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/configuration_option/test_email/to","smtp/module/email"])'
+                          parameters:
+                            value: 'gonzalo.martinez@improntus.com'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/module/name"])'
+                          parameters:
+                            value: 'gonzalo.martinez'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/configuration_option/host"])'
+                          parameters:
+                            value: '164.92.104.122'
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["smtp/configuration_option/port"])'
+                          parameters:
+                            value: '2525'
+                        # ---------------------------------------------- 
+
+                        # Configuraciones generales
+                        - converter: 'setValue'
+                          condition: 'in_array({{path}},["web/cookie/cookie_path"])'
+                          parameters:
+                            value: '/'
+                        # ---------------------------------------------- 
+

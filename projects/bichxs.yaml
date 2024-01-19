@@ -1,0 +1,43 @@
+# ===================================== #
+#              SKC DUMPER               #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+  - 'extends/CleanCompanies.yaml'
+  - 'extends/CleanCustomers.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.0
+
+# Set Dump Name
+dump:
+  output: 'bichxs_db_prod_{Ymd}.sql.gz'
+
+# Set Database Name
+database:
+  name: 'bichxs'
+
+
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # BASE URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url"])'
+              parameters:
+                value: 'https://www.bichxsmarket.com/'
+            # BASE MEDIA URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_media_url","web/unsecure/base_media_url"])'
+              parameters:
+                value: 'https://www.bichxsmarket.com/media/'
+            # BASE LINK
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["web/unsecure/base_link_url","web/secure/base_link_url"])'
