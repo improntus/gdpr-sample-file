@@ -1,0 +1,204 @@
+# ===================================== #
+#              RES DUMPER               #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+#  - 'extends/CleanCompanies.yaml'
+#  - 'extends/CleanCustomers.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  output: 'res_db_prod_{Ymd}.sql.bz2'
+
+# Edit tables
+tables:
+  improntus_mercadopago_preference:
+    truncate: true
+  improntus_pedidosya:
+    truncate: true
+  sales_order_status_history:
+    truncate: true
+  improntus_mercadopago_profile:
+    converters:
+      public_key:
+        converter: 'setValue'
+        parameters:
+          value: 'TEST-e10dcff9-dd3e-46ac-91e5-77e8ff068939'
+      access_token:
+        converter: 'setValue'
+        parameters:
+          value: 'TEST-6084738760168341-030312-ae4b54003a4749211726a46b0954e320-98736529'
+
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # BASE URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url"])'
+              parameters:
+                value: 'https://res.local/'
+            # BASE MEDIA URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_media_url"])'
+              parameters:
+                value: 'https://res.com.ar/media/'
+            # BASE LINK
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["web/unsecure/base_link_url","web/secure/base_link_url"])'
+            # -----------------------------SMTP----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/name"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtphost"])'
+              parameters:
+                value: '164.92.104.122'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/smtpport"])'
+              parameters:
+                value: '2525'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/auth"])'
+              parameters:
+                value: 'NONE'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/username"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["system/gmailsmtpapp/password"])'
+            # -----------------------------GTM y GA4----------------------------------------
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["google/gtag/analytics4/measurement_id"])'
+            - converter: 'setNull'    
+              condition: 'in_array({{path}},["googletagmanager/general/account"])'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["weltpixel_googletagmanager/general/enable"])'
+              parameters:
+                value: '0'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["weltpixel_googletagmanager/general/gtm_code"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["weltpixel_googletagmanager/general/gtm_nonjs_code"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["weltpixel_googletagmanager/api/account_id"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["weltpixel_googletagmanager/api/container_id"])'
+            # -----------------------------ElasticSearch----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["catalog/search/elasticsearch7_server_hostname"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["catalog/search/elasticsearch7_server_port"])'
+              parameters:
+                value: '9200'
+            # -----------------------------MercadoPago----------------------------------------
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/public_key"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/access_token"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/public_key"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/access_token"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["payment/improntus_mercadopagov2/general/sponsor_id"])'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago_custom/public_key"])'
+              parameters:
+                value: 'TEST-e10dcff9-dd3e-46ac-91e5-77e8ff068939'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago/public_key"])'
+              parameters:
+                value: 'TEST-e10dcff9-dd3e-46ac-91e5-77e8ff068939'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago_custom/access_token"])'
+              parameters:
+                value: 'TEST-6084738760168341-030312-ae4b54003a4749211726a46b0954e320-98736529'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago/access_token"])'
+              parameters:
+                value: 'TEST-6084738760168341-030312-ae4b54003a4749211726a46b0954e320-98736529'
+            # -----------------------------Facebook Pixel----------------------------------------
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["apptrian_facebookpixel/general/pixel_id"])'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["cadence_fbpixel/visitor/enabled"])'
+              parameters:
+                value: '0'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["cadence_fbpixel/visitor/pixel_id"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["apptrian_facebookpixel/client/pixel_id"])'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["apptrian_facebookpixel/server/access_token"])'
+            # -----------------------------Mailup----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["mailup/general/enable"])'
+              parameters:
+                value: '0'
+            # -----------------------------PedidosYa----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["carriers/pedidosya/mode"])'
+              parameters:
+                value: 'testing'
+            # -----------------------------Club RES----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/basMode"])'
+              parameters:
+                value: 'sandbox'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/sandbox/basEndpoint"])'
+              parameters:
+                value: 'https://reswebapi.mierpnube.com/WebAPITest/'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/sandbox/basClientId"])'
+              parameters:
+                value: 'api'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/sandbox/basClientSecret"])'
+              parameters:
+                value: 'secret'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/sandbox/basUsername"])'
+              parameters:
+                value: 'ITBS\\webapi.res'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/sandbox/basPassword"])'
+              parameters:
+                value: 'w3b4p1r3s*'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/production/basEndpoint"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/production/basClientId"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/production/basClientSecret"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/production/basUsername"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["clubres/general/production/basPassword"])'
+              parameters:
+                value: ''
+            # -----------------------------Robot----------------------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["design/search_engine_robots/default_robots"])'
+              parameters:
+                value: 'NOINDEX,NOFOLLOW'

@@ -1,0 +1,146 @@
+# ===================================== #
+#              SOLE DUMPER              #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+#  - 'extends/CleanCompanies.yaml'
+#  - 'extends/CleanCustomers.yaml'
+#  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  output: 'sole_db_prod_{Ymd}.sql.bz2'
+
+# Truncate custom tables
+tables:
+  amasty_amrules_purchase_history_index:
+    truncate: true
+
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # BASE URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url"])'
+              parameters:
+                value: 'https://sole.local/'
+            # BASE MEDIA URL
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/secure/base_media_url","web/unsecure/base_media_url"])'
+              parameters:
+                value: 'https://www.sole.com.pe/media/'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["web/unsecure/base_media_url"])'
+              parameters:
+                value: 'http://www.sole.com.pe/media/'
+            # BASE LINK
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["web/unsecure/base_link_url","web/secure/base_link_url"])'
+            # -----------------------------PAYMENT METHODS----------------------------------------
+            # PAYU 
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/eloom_payments_payu/environment"])'
+              parameters:
+                value: 'sandbox'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/eloom_payments_payu_pagoefectivo/active"])'
+              parameters:
+                value: '0'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/eloom_payments_payu_cc/title"])'
+              parameters:
+                value: 'PayU TEST Tarjeta de débito / crédito'
+            # APURATA 
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/apurata_financing/allow_http"])'
+              parameters:
+                value: '0'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/apurata_financing/apurata_client_id"])'
+              parameters:
+                value: 'mti_sole_pos_pe_test'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/apurata_financing/secret_token"])'
+              parameters:
+                value: 'c91217e3fdd94749ac90bf8658e491ab'
+            # POWERPAY
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/powerpay/sandbox"])'
+              parameters:
+                value: '1'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/powerpay/title"])'
+              parameters:
+                value: 'Powerpay TEST'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/powerpay/merchant_id"])'
+              parameters:
+                value: 'R21BKUXQBZE4'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/powerpay/clientid"])'
+              parameters:
+                value: '0:3:DTSmZ8W+EqjOXJzinvuVXBuKRjJrCvKiQr53vb04khJ1jTb156GKakZ73Ix0Bzb/Rjseoc247St8JNXxMXxyyurf5x0zV+kEOuk='
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/powerpay/secret"])'
+              parameters:
+                value: '0:3:UST2fmUJBTRLFcA1eHGaFOuWVujetCLNQKqdptPLD8pLfGDQXyGhW+YjoT5H55D4/HyfaCxKOKyY0wBhmE+7zggu3PUWU4s/y8M='
+            # MERCADOPAGO
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago/public_key"])'
+              parameters:
+                value: 'TEST-fbef3bfe-1e4a-4497-90c8-a483c022f801'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago/access_token"])'
+              parameters:
+                value: 'TEST-613255216075037-051103-9e2fa0ecf7ce7ab117d362bb5981f22e-522515699'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/mercadopago_custom/title"])'
+              parameters:
+                value: 'Credit Card - Mercado Pago TEST'
+            # CHECKMONEY
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["payment/checkmo/active"])'
+              parameters:
+                value: '1'
+            # ----------------------------- END PAYMENT METHODS----------------------------------------
+            # Summa Integrations
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["summa_integrations/orders/order_endpoint"])'
+              parameters:
+                value: 'https://ts.metusa.com/WebApiSoleQA/api/pedido/registraryfacturar'
+            # Weltpixel GA4
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["weltpixel_ga4/general/enable"])'
+              parameters:
+                value: '0'
+            - converter: 'setNull'
+              condition: 'in_array({{path}},["weltpixel_ga4/general/gtm_code"])'
+            - converter: 'setNull'    
+              condition: 'in_array({{path}},["weltpixel_ga4/general/gtm_nonjs_code"])'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["weltpixel_ga4/meta_pixel_tracking/enable"])'
+              parameters:
+                value: '0'
+            # Google Analytics / Adwords
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["google/adwords/active"])'
+              parameters:
+                value: '0'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["google/analytics/active"])'
+              parameters:
+                value: '0'
+            # Robots
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["design/search_engine_robots/default_robots"])'
+              parameters:
+                value: 'NOINDEX,NOFOLLOW'
