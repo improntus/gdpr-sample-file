@@ -107,12 +107,18 @@ tables:
               condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/public_key"])'
             - converter: 'setNull'
               condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/access_token"])'
-            - converter: 'setNull'
+            - converter: 'setValue'
               condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/public_key"])'
-            - converter: 'setNull'
+              parameters:
+                value: 'TEST-e10dcff9-dd3e-46ac-91e5-77e8ff068939'
+            - converter: 'setValue'
               condition: 'in_array({{path}},["payment/improntus_mercadopagov2/payment_methods/access_token"])'
-            - converter: 'setNull'
+              parameters:
+                value: 'TEST-6084738760168341-030312-ae4b54003a4749211726a46b0954e320-98736529'
+            - converter: 'setValue'
               condition: 'in_array({{path}},["payment/improntus_mercadopagov2/general/sponsor_id"])'
+              parameters:
+                value: '222568987'
             - converter: 'setValue'
               condition: 'in_array({{path}},["payment/mercadopago_custom/public_key"])'
               parameters:
@@ -202,3 +208,8 @@ tables:
               condition: 'in_array({{path}},["design/search_engine_robots/default_robots"])'
               parameters:
                 value: 'NOINDEX,NOFOLLOW'
+            # -----------------------------Shipper Autocomplete-------------------------
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["shipping/shipper_autocomplete/google_api_key"])'
+              parameters:
+                value: 'AIzaSyDQm7yweOsOwqHQEybGN_QVEWY1-1oWxww'
