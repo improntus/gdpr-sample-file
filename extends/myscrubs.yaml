@@ -1,0 +1,10 @@
+# ========================================= #
+#  Tablas de log y reportes pesados         #
+# ========================================= #
+---
+tables:
+  improntus_import_product_log:
+    truncate: true
+
+  amasty_amrules_purchase_history_index:
+    truncate: true
