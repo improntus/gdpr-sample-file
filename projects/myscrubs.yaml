@@ -1,0 +1,203 @@
+---
+extends:
+- 'magento2'
+- 'extends/myscrubs.yaml'
+version: '2.4.5-p3'
+
+database:
+    host: 'localhost'
+    user: 'erika'
+    password: '12345678'
+    name: 'myscrubs_prod_to_dump_1204'
+
+dump:
+    output: 'mysc_prod-{Y-m-d}.sql.bz2'
+    compress: 'bzip2'
+
+tables:
+
+
+    quote:
+        filters:
+            - ['created_at', 'gt', 'expr: date_sub(now(), interval 90 day)']
+
+    # La parte del sales_sequence_profile, todavia no funciona
+    sales_sequence_data:
+      converters:
+        value:
+          converter: 'chain'
+          parameters:
+            converters:
+              - converter: 'executeSql'
+                condition: 'always()'
+                parameters:
+                  query: 'UPDATE sales_sequence_profile SET prefix = "TEST" WHERE profile_id > 0;'
+
+
+    # UPDATE CORE_CONFIG_DATA
+    core_config_data:
+      converters:
+        value:
+          converter: 'chain'
+          parameters:
+            converters:
+              # BASE URL
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["web/secure/base_url","web/unsecure/base_url"])'
+                parameters:
+                  value: 'https://myscrubs.test/'
+              # BASE MEDIA URL
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["web/secure/base_media_url","web/unsecure/base_media_url"])'
+                parameters:
+                  value: 'https://www.myscrubs.cl/media/'
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["web/unsecure/base_media_url"])'
+                parameters:
+                  value: 'http://www.myscrubs.cl/media/'
+              # BASE LINK
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["web/unsecure/base_link_url","web/secure/base_link_url"])'
+              # -----------------------------PAYMENT METHODS----------------------------------------
+              # transbank_webpay 
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["payment/transbank_webpay/security_parameters/environment"])'
+                parameters:
+                  value: 'TEST'
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["payment/transbank_webpay/security/environment"])'
+                parameters:
+                  value: 'TEST'
+              # Khipu 
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["payment/simplified/merchant_id"])'
+                parameters:
+                  value: '468139'
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["payment/simplified/merchant_secret"])'
+                parameters:
+                  value: '98c47005fd8bef6aa488315e23ebfac523725290'
+              # improntus_mercadopago
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/public_key"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["payment/improntus_mercadopago_custom/access_token"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["payment/improntus_mercadopago_custom_gateway/public_key"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["payment/improntus_mercadopago_custom_gateway/access_token"])'
+              # check_money
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["payment/checkmo/active"])'
+                parameters:
+                  value: '1'
+              # ----------------------------- END PAYMENT METHODS----------------------------------------
+              # Bsale Integration
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["bsale/config/active"])'
+                parameters:
+                  value: '0'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["bsale/config/webservice_access_token"])'
+
+              #Desactivar el modo Async de los mails
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["sales_email/general/async_sending"])'
+                parameters:
+                  value: '0'
+
+              #Desactivar ReCaptcha (Storefront)
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["recaptcha_frontend/type_for/customer_login"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["recaptcha_frontend/type_for/contact"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["recaptcha_frontend/type_for/customer_forgot_password"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["recaptcha_frontend/type_for/customer_create"])'
+
+              #Google Analytics
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["analytics/subscription/enabled"])'
+                parameters:
+                  value: '0'
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["google/analytics/active"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["google/analytics/account"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["measurementprotocol/configuration/account"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["design/head/includes"])'
+
+              #Social Login FB
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["weltpixel_sociallogin/fb/fb_enabled"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["weltpixel_sociallogin/fb/app_id"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["weltpixel_sociallogin/fb/app_secret"])'
+
+              #apptrian_facebookpixel
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["apptrian_facebookpixel/general/enabled"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["apptrian_facebookpixel/general/pixel_id"])'
+
+              #facebook/business_extension
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["facebook/business_extension/active"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["facebook/business_extension/pixel_id"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["facebook/business_extension/access_token"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["facebook/business_extension/commerce_account_id"])'
+
+              #tatvic
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["tatvic_ee/general/enable"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["tatvic_ee/general/ua_id"])'
+
+                #weltpixel_googletagmanager
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["weltpixel_googletagmanager/general/enable"])'
+                parameters:
+                  value: '0'            
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["weltpixel_googletagmanager/api/ua_tracking_id"])'
+
+                #SMTP MAGEPLAZA
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["smtp/configuration_option/host"])'
+                parameters:
+                  value: '164.92.104.122' 
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["smtp/configuration_option/port"])'
+                parameters:
+                  value: '2525'  
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["smtp/configuration_option/authentication"])'
+                parameters:
+                  value: 'smtp'  
+              - converter: 'setValue'
+                condition: 'in_array({{path}},["smtp/configuration_option/test_email/to"])'
+                parameters:
+                  value: 'dev-contact@gmail.com'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["smtp/configuration_option/username"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["smtp/configuration_option/password"])'
+              - converter: 'setNull'
+                condition: 'in_array({{path}},["smtp/configuration_option/protocol"])'
