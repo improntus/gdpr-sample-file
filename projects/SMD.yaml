@@ -1,0 +1,82 @@
+# ===================================== #
+#              SMD DUMPER               #
+#       Move to root path for use       #
+# ===================================== #
+---
+extends:
+  - 'extends/base.yaml'
+  - 'extends/CleanCustomers.yaml'
+  - 'extends/CleanOrders.yaml'
+
+# Set Magento Version
+version: 2.4.5
+
+# Set Dump Name
+dump:
+  compress: 'gzip'
+  output: 'smd_db_prod_{Ymd}.sql.gz'
+
+# Set Database Name
+database:
+  name: 'sumed'
+
+# Truncate custom tables
+tables:
+  # UPDATE CORE_CONFIG_DATA
+  core_config_data:
+    converters:
+      value:
+        converter: 'chain'
+        parameters:
+          converters:
+            # SMTP
+            - converter: 'setValue'
+              condition: '{{path}} == "smtp/module/active"'
+              parameters:
+                value: '1'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["smtp/configuration_option/authentication","smtp/configuration_option/password"])'
+              parameters:
+                value: ''
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["smtp/configuration_option/protocol"])'
+              parameters:
+                value: 'none'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["smtp/configuration_option/username"])'
+              parameters:
+                value: 'mailbox.passkeeper@improntus.com'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["smtp/configuration_option/host"])'
+              parameters:
+                value: 'localhost'
+            - converter: 'setValue'
+              condition: 'in_array({{path}},["smtp/configuration_option/port"])'
+              parameters:
+                value: '2525'
+            # Change Varnish Cache
+            - converter: 'setValue'
+              condition: '{{path}} == "system/full_page_cache/caching_application"'
+              parameters:
+                value: '1'
+            # MIDDLE
+            - converter: 'setValue'
+              condition: '{{path}} == "sumed/config/webservice_url"'
+              parameters:
+                value: 'https://stg-c3.drogueriasumed.com/sap/'
+            - converter: 'setValue'
+              condition: '{{path}} == "postnet/menu/api_url_prod"'
+              parameters:
+                value: 'https://stg-c3.drogueriasumed.com/sap/'
+            - converter: 'setValue'
+              condition: '{{path}} == "cuenta_corriente_admin/menu/api_url_test"'
+              parameters:
+                value: 'https://stg-c3.drogueriasumed.com/sap/'
+            - converter: 'setValue'
+              condition: '{{path}} == "orders/menu/api_url_test"'
+              parameters:
+                value: 'https://stg-c3.drogueriasumed.com/sap/'
+            - converter: 'setValue'
+              condition: '{{path}} == "sumed/schedule_orders/api"'
+              parameters:
+                value: 'https://stg-c3.drogueriasumed.com/sap/'
